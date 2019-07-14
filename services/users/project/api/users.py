@@ -1,24 +1,23 @@
 # services/users/project/api/users.py
 
 
-from flask import Blueprint, request, render_template 
+from flask import Blueprint, request, render_template
 from flask_restful import Resource, Api
 from sqlalchemy import exc
 
-from project import db 
-from project.api.models import User 
+from project import db
+from project.api.models import User
 
 users_blueprint = Blueprint('users', __name__, template_folder='./templates')
 api = Api(users_blueprint)
 
 
-
 class UsersPing(Resource):
     def get(self):
         return {
-        'status': 'success',
-        'message': 'pong!'
-    }
+            'status': 'success',
+            'message': 'pong!'
+        }
 
 
 class UsersList(Resource):
@@ -51,7 +50,8 @@ class UsersList(Resource):
                 response_object['message'] = f'{email} was added!'
                 return response_object, 201
             else:
-                response_object['message'] = 'Sorry. That email already exists.'
+                response_object['message'] = \
+                    'Sorry. That email already exists.'
                 return response_object, 400
         except exc.IntegrityError:
             db.session.rollback()
@@ -83,6 +83,7 @@ class Users(Resource):
         except ValueError:
             return response_object, 404
 
+
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -94,8 +95,6 @@ def index():
     return render_template('index.html', users=users)
 
 
-
 api.add_resource(UsersPing, '/users/ping')
 api.add_resource(UsersList, '/users')
 api.add_resource(Users, '/users/<user_id>')
-
